@@ -20,6 +20,7 @@ title('Data');
 xlabel('x1');
 ylabel('x2');
 
+
 %% Perceptron
 eta = 0.1;
 w = randn(2,1);
@@ -29,7 +30,7 @@ iter = 200;
 % train
 for i = 1:iter
     y = label .* (X*w + b);
-    idx = find(y < 0);
+    idx = find(y <= 0);
     if ~isempty(idx)
         j = randsample(idx,1);
         w = w + eta * label(j) * X(j,:)';
@@ -48,4 +49,5 @@ hold on;
 t = -0.5:0.1:2.5;
 plot(t,(-b-w(1)*t)/w(2));
 hold off;
+legend('Class 1', 'Class 2','Hyperplane');
 end
