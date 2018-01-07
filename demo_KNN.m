@@ -10,7 +10,7 @@ X = [mvnrnd(mu1,sigma,N/2);mvnrnd(mu2,sigma,N/2)];
 label = [ones(N/2,1); -ones(N/2,1)];
 X_test = mvnrnd(mu1,sigma,1);
 
-%
+% Show the toy data
 figure;
 hold on;
 plot(X(label==1,1),X(label==1,2),'ro');
@@ -21,7 +21,8 @@ box on;
 legend('Class 1', 'Class 2', 'Test data');
 
 %% KNN
-[D, I] = pdist2(X, X_test, 'euclidean', 'Smallest', 1);
-pred_label = label(I);
+K = 5;
+[D, I] = pdist2(X, X_test, 'euclidean', 'Smallest', 5);
+pred_label = sign(sum(label(I)));
 
 %% KD Tree
