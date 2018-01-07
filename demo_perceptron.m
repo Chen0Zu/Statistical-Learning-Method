@@ -12,8 +12,15 @@ label = [ones(N/2,1); -ones(N/2,1)];
 %
 figure;
 hold on;
-plot(X(label==1,1), X(label==1,2), 'ro');
-plot(X(label==-1,1), X(label==-1,2), 'bo');
+for i = 1:N
+    if label(i) == 1
+        linetype = 'ro';
+    else
+        linetype = 'bo';
+    end
+    plot(X(i,1), X(i,2), linetype);
+    text(X(i,1)+0.05, X(i,2), num2str(i));
+end
 hold off;
 box on;
 title('Data');
@@ -38,6 +45,27 @@ for i = 1:iter
     else
         break;
     end
+    
+    %% the code of this section for observing the change of hyperplan
+%     figure;
+%     hold on;
+%     for k = 1:N
+%         if label(k) == 1
+%             linetype = 'ro';
+%         else
+%             linetype = 'bo';
+%         end
+%         plot(X(k,1), X(k,2), linetype);
+%         text(X(k,1)+0.05, X(k,2), num2str(k));
+%     end
+%     t = -0.5:0.1:2.5;
+%     plot(t,(-b-w(1)*t)/w(2));
+%     hold off;
+%     box on;
+%     title('Data');
+%     xlabel('x1');
+%     ylabel('x2');
+    
 end
 
 % test
