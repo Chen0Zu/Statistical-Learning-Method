@@ -1,6 +1,8 @@
-clear;clc;close all;
+function demo_KNN
+% clear;clc;close all;
 dbstop if error
 rng(1);
+
 %% Generate data from two Gaussion distribution
 N = 100;
 mu1 = [1,1];
@@ -25,4 +27,18 @@ K = 5;
 [D, I] = pdist2(X, X_test, 'euclidean', 'Smallest', 5);
 pred_label = sign(sum(label(I)));
 
+end
+
 %% KD Tree
+function create_KDTree(X)
+
+variance = var(X);
+[~, idx] = max(variance);
+
+N = size(X,1);
+[~,ind] = sort(X(:,idx));
+i = ind(floor(N/2)+1);
+
+
+end
+
