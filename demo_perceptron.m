@@ -1,3 +1,14 @@
+%%
+% Chen Zu Janurary 6, 2018
+%
+% It is a demo code for demonstrating perceptron algorithm including SGD 
+% and dual methods.
+%
+% Related paper:
+%
+% [1] Hang Li. Statistical Learning Method, 2012.
+%
+%%
 clear;clc;close all;
 dbstop if error
 rng(2);
