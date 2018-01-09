@@ -1,4 +1,14 @@
 function demo_KNN
+%%
+% Chen Zu Janurary 9, 2018
+%
+% It is a demo code for demonstrating KNN algorithm and KD Tree.
+%
+% Related paper:
+%
+% [1] Hang Li. Statistical Learning Method, 2012.
+%
+%%
 clear;clc;close all;
 dbstop if error
 rng(1);
