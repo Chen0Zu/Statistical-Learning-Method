@@ -30,6 +30,11 @@ pred_label = sign(sum(label(I)));
 %% Create KD Tree
 data = [2,3; 5,4; 9,6; 4,7; 8,1; 7,2];
 tree = create_KDTree(data);
+
+%% Search KD Tree
+% x = [2.1,3.1];
+x = [2, 4.5];
+neighbor = kdtree_search(tree, x);
 end
 
 %% KD Tree
@@ -49,6 +54,8 @@ if nargin == 1
     node.type = 'node';
     node.left = 0;
     node.right = 0;
+    node.split_dim = 0;
+    node.split_val = 0;
     node.vector = zeros(1,d); % store the sample
     node.parent = 0;
     node.index = 0;
@@ -97,6 +104,8 @@ else
         tree_node(assigned_nn).right = [];
     end
     %
+    tree_node(assigned_nn).split_dim = split_dim;
+    tree_node(assigned_nn).split_val = X(pos,split_dim);
     tree_node(assigned_nn).vector = X(pos,1:end-1);
     tree_node(assigned_nn).index = X(pos,end);
     tree_node(assigned_nn).numpoints = n;
@@ -107,6 +116,65 @@ if nargin == 1
     clear global tree_node;
 else
     tree = assigned_nn;
+end
+end
+
+%% Search KD Tree
+function nearest = kdtree_search(tree_node, x)
+nearest = [];
+search_path = [];
+current_nn = 1;
+next_nn = 1;
+
+% forward search
+while 1
+    current_nn = next_nn;
+    
+    if strcmp(tree_node(current_nn).type, 'node')
+        split_dim = tree_node(current_nn).split_dim;
+        if x(split_dim) < tree_node(current_nn).split_val
+            next_nn = tree_node(current_nn).left;
+        else
+            next_nn = tree_node(current_nn).right;
+        end
+        search_path = [search_path;current_nn];
+    else
+        nearest = current_nn;
+        near_dist = norm(x-tree_node(nearest).vector);
+        break;
+    end
+    
+end
+
+% backward search
+while ~isempty(search_path)
+    current_nn = search_path(end);
+    dist = norm(x-tree_node(current_nn).vector);
+    split_dim = tree_node(current_nn).split_dim;
+    if strcmp(tree_node(current_nn).type, 'node')
+        search_path(end) = [];
+        if (x(split_dim)<=tree_node(current_nn).split_val) && (tree_node(current_nn).split_val <= x(split_dim)+near_dist)
+            
+            search_path = [search_path;tree_node(current_nn).right];
+            if dist < near_dist
+                near_dist = dist;
+                nearest = current_nn;
+            end
+        elseif (tree_node(current_nn).split_val<=x(split_dim)) && (x(split_dim)-near_dist<=tree_node(current_nn).split_val)
+            
+            search_path = [search_path;tree_node(current_nn).left];
+            if dist < near_dist
+                near_dist = dist;
+                nearest = current_nn;
+            end
+        end
+    else
+        if dist < near_dist
+            near_dist = dist;
+            nearest = current_nn;
+        end
+        search_path(end) = [];
+    end
 end
 end
 
