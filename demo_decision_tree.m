@@ -39,8 +39,11 @@ label = X(:,end);
 X = X(:,1:end-1);
 
 [inf_gain, inf_gain_ratio] = information_gain(X,label);
+
+tree = ID3(X, label);
 end
 
+%%
 function [inf_gain, inf_gain_ratio] = information_gain(X,label)
 [n,d] = size(X);
 c = unique(label);
@@ -61,7 +64,7 @@ for i = 1:d
         for z = 1:length(c)
             Dik = sum(X(:,i) == k(j) & label == c(z));
             if Dik ~= 0
-            t = t + Dik/Di*log2(Dik/Di);
+                t = t + Dik/Di*log2(Dik/Di);
             else
                 t = t + 0;
             end
@@ -72,4 +75,66 @@ end
 
 inf_gain = H - cond_H;
 inf_gain_ratio = inf_gain ./ H;
+end
+
+%%
+function tree = ID3(X, label, parent)
+
+global tree_node;
+global node_number;
+
+if nargin == 2
+    
+    parent = 0;
+    class = unique(label);
+    node_number = 1;
+    [n,d] = size(X);
+    X(:,d+1) = (1:n)';
+    node.fea_idx = 0;
+    node.fea_set = 1:d;
+    node.parent = 0;
+    node.child_idx = 0;
+    node.data_idx = 0;
+    node.type = 'node';
+    node.label = 0;
+    
+    cell_node(1:d) = node;
+    tree_node = cell_node;
+    clear cell_node;
+    
+    
+else
+    [n,d] = size(X(:,end-1));
+    node_number = node_number + 1;
+end
+
+current = node_number;
+tree_node(current).parent = parent;
+tree_node(current).data_idx = X(:,end);
+
+if all(label == label(1))
+    tree_node(current).type = 'leaf';
+    tree_node(current).label = label(1);
+    tree_node(current).data_idx = X(:,end);
+    tree = current;
+    return;
+end
+
+[inf_gain, ~] = information_gain(X(:,1:end-1),label);
+[~,idx] = max(inf_gain);
+dim_value = unique(X(:,idx));
+child = zeros(length(dim_value),1);
+
+for i = 1:length(dim_value)
+    split = X(:,idx) == dim_value(i);
+    child(i) = ID3(X(split,:), label(split), current);
+end
+
+tree_node(current).child = child;
+
+if nargin == 2
+    tree = tree_node;
+else
+    tree = current;
+end
 end
